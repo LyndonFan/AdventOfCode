@@ -1,4 +1,4 @@
-f = open("2019Prac/05.txt","r")
+f = open("2019/05.txt","r")
 inp = f.read()
 f.close()
 arr = [int(x) for x in inp.split(",")]
