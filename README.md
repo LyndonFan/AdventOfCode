@@ -1,1 +1,3 @@
-# AdventOfCode
+# Advent Of Code
+
+My attempts at different years of advent of code. My attempts are quite shoddy to be honest...
