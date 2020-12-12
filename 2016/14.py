@@ -35,18 +35,22 @@ for k in range(27000):
     i = 0
     while i<len(h)-3 and not(h[i]==h[i+1] and h[i+1]==h[i+2]):
         i += 1
-    if i<len(h)-3 or (h[i]==h[i+1] and h[i]==h[i+2]):
+    if h[i]==h[i+1] and h[i+1]==h[i+2]:
         hashes.append((k,h[i],h))
+print(hashes)
 keys = []
-while len(keys)<64:
+while len(hashes)>0 and len(keys)<64:
     k,c,h = hashes.pop(0)
-    i = 1
+    # print(k,c,h)
+    i = 0
     isOkay = False
     while not(isOkay) and i<len(hashes) and hashes[i][0]-k<=1000:
         isOkay = c*5 in hashes[i][2]
         i += 1
     if isOkay:
-        # print(c,hashes[i-1][2])
+        # print(k,c,h,hashes[i-1][2])
         keys.append(k)
 print(keys)
-print(keys[63])
+print(len(keys), keys[-1])
+
+# ans is not 22453 or 22668...
