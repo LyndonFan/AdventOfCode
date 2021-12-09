@@ -1,12 +1,7 @@
-f = open("2019/05.txt","r")
-inp = f.read()
-f.close()
-arr = [int(x) for x in inp.split(",")]
-
-def intCode(inpArr,inputs = []):
+def intCode(inpArr,inputs = [], start = 0):
     arr = [x for x in inpArr]
-    ouputs = []
-    pointer = 0
+    outputs = []
+    pointer = start
     while arr[pointer]%100!=99:
         op = arr[pointer]
         if op%100==1 or op%100==2:
@@ -16,13 +11,17 @@ def intCode(inpArr,inputs = []):
             arr[pos] = (a+b) if op%100==1 else (a*b)
             pointer += 4
         elif op%100==3:
-            inp = inputs.pop()
-            pos = arr[pointer+1]
-            arr[pos] = inp
-            pointer += 2
+            try:
+                inp = inputs.pop(0)
+                pos = arr[pointer+1]
+                arr[pos] = inp
+                pointer += 2
+            except:
+                print("Ran out of inputs")
+                return arr, outputs, pointer
         elif op%100==4:
             pos = arr[pointer+1]
-            ouputs.append(arr[pos])
+            outputs.append(arr[pos])
             pointer += 2
         elif op%100==5 or op%100==6:
             para = arr[pointer+1] if (op//100)%10 else arr[arr[pointer+1]]
@@ -41,7 +40,4 @@ def intCode(inpArr,inputs = []):
             raise AssertionError("Unseen opcode: "+str(op))
         print(arr)
         print(pointer)
-    return arr, ouputs
-
-resarr, out = intCode(arr,[5])  # [1] for part a)
-print(out)
+    return arr, outputs
