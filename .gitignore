@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 
 *.txt
+!template.py.txt
 .DS_Store
 
 # C extensions
