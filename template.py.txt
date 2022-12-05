@@ -3,6 +3,7 @@ import os
 
 CWD = os.path.dirname(os.path.abspath(__file__))
 
+
 def parse(inp):
     data = inp.split("\n")
     return data
