@@ -1,9 +1,11 @@
-# year YEAR day DAY solution
+# year YEAR day DAY
 
 """
 DESCRIPTION
 """
+import os
 
+CWD = os.path.dirname(os.path.abspath(__file__))
 
 def parse(inp):
     data = inp.split("\n")
@@ -21,13 +23,13 @@ def part_b(inp):
 
 
 if __name__ == "__main__":
-    with open("test.txt", "r") as f:
+    with open(f"{CWD}/test.txt", "r") as f:
         inp = f.read().strip()
     print("Testing  (a):", part_a(inp))
     print("Expected (a):", "A_RESPONSE")
     print("Testing  (b):", part_b(inp))
     print("Expected (b):", "B_RESPONSE")
-    with open("input.txt", "r") as f:
+    with open(f"{CWD}/input.txt", "r") as f:
         inp = f.read().strip()
     print("Actual   (a):", part_a(inp))
     print("Actual   (b):", part_b(inp))
