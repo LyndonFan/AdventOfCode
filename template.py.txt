@@ -1,8 +1,4 @@
 # year YEAR day DAY
-
-"""
-DESCRIPTION
-"""
 import os
 
 CWD = os.path.dirname(os.path.abspath(__file__))

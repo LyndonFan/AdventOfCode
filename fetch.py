@@ -6,6 +6,7 @@ import argparse
 
 import requests
 from bs4 import BeautifulSoup
+from lxml import html
 
 from dotenv import load_dotenv
 
@@ -22,6 +23,7 @@ with open("template.py.txt", "r") as f:
 
 
 def fetch(year: int, day: int):
+    print(f"Fetching data for {year=}, {day=}")
     print("Creating new directory and files... ", end="")
     dir = os.path.join(CWD, str(year), f"{day:02}")
     os.makedirs(dir, exist_ok=True)
@@ -55,39 +57,54 @@ def fetch(year: int, day: int):
 
     print("Fetching original website...", end="")
     page_url = f"https://adventofcode.com/{year}/day/{day}"
-    response = requests.get(page_url)
+    response = requests.get(page_url, headers=headers)
     print(response.status_code)
     if response.status_code != 200:
         print(response.text)
-        return 
-    soup = BeautifulSoup(response.text, "html.parser")
-    code_tag = soup.find("pre")
-    if code_tag:
-        with open(os.path.join(dir, "test.txt"), "w+") as f:
-            f.write(code_tag.text)
-        print("Added test input")
-    # find last <code> tag
-    code_tag = soup.findAll("code")[-1]
-    print(code_tag.text)
-    desc = soup.find("article", class_="day-desc")
-    if code_tag is None:
-        print("Unable to find test output")
         return
+    tree = html.fromstring(response.text)
+
+    test_input = None
+    possible_xpaths = [
+        "//*[contains(text(),'For example,')]//code",
+        "//*[contains(text(),'For example,')]/following::code",
+        "//pre",
+        "//code",
+    ]
+    print("Finding test input", end="... ")
+    for xpath in possible_xpaths:
+        elem = tree.xpath(xpath)
+        if elem:
+            test_input = elem[0].text_content()
+            break
+    if test_input:
+        with open(os.path.join(dir, "test.txt"), "w+") as f:
+            f.write(test_input)
+        print("Added test input")
+    else:
+        print("Unable to find test input")
+
+    # last <code> tag should be test output
+    test_output = ""
+    code_elems = tree.xpath("//code")
+    if code_elems:
+        test_output = code_elems[-1].text_content()
+    else:
+        print("Unable to find test output")
     with open(os.path.join(dir, "run.py"), "r") as f:
         to_write = f.read()
     with open(os.path.join(dir, "run.py"), "w") as f:
-        replace_string = "A_RESPONSE"
-        if replace_string not in to_write:
-            replace_string = "B_RESPONSE"
-        try:
-            temp = int(code_tag.text)
-            to_write = to_write.replace(f'"{replace_string}"', code_tag.text)
-        except:
-            to_write = to_write.replace(replace_string, code_tag.text)
-        to_write = to_write.replace("DESCRIPTION", desc.text)
+        if test_output:
+            replace_string = "A_RESPONSE"
+            if replace_string not in to_write:
+                replace_string = "B_RESPONSE"
+            try:
+                temp = int(test_output)
+                to_write = to_write.replace(f'"{replace_string}"', test_output)
+            except ValueError:
+                to_write = to_write.replace(replace_string, test_output)
+            print("Updated with test solution")
         f.write(to_write)
-    print("Added solution")
-        
 
 
 def main(year: int, day: int):
