@@ -50,15 +50,15 @@ def fetch(year: int, day: int):
     print(response.status_code)
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, "html.parser")
-        # find first <code> tag
-        code_tag = soup.find("code")
+
+        code_tag = soup.find("pre")
         if code_tag:
             with open(os.path.join(dir, "test.txt"), "w+") as f:
                 f.write(code_tag.text)
             print("Added test input")
         # find last <code> tag
         code_tag = soup.findAll("code")[-1]
-        print(code_tag)
+        print(code_tag.text)
         desc = soup.find("article", class_="day-desc")
         if code_tag:
             with open(os.path.join(dir, "run.py"), "w+") as f:
@@ -80,8 +80,8 @@ def main(year: int, day: int):
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("year", type=int, default=today_year)
-parser.add_argument("day", type=int, default=today_day)
+parser.add_argument("--year", "-y", type=int, default=today_year)
+parser.add_argument("--day", "-d", type=int, default=today_day)
 if __name__ == "__main__":
     args = parser.parse_args()
     main(args.year, args.day)
