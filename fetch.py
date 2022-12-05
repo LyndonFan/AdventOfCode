@@ -7,6 +7,10 @@ import argparse
 import requests
 from bs4 import BeautifulSoup
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 CWD = os.path.dirname(os.path.abspath(__file__))
 
 today_day = datetime.today().day
@@ -34,12 +38,17 @@ def fetch(year: int, day: int):
 
     print("Fetching input text...", end="")
     input_url = f"https://adventofcode.com/{year}/day/{day}/input"
-    response = requests.get(input_url)
+    headers = {"cookie": f"session={os.environ.get('AOC_COOKIE','')}"}
+    response = requests.get(input_url, headers=headers)
     print(response.status_code)
     if response.status_code == 200:
-        with open(os.path.join(dir, "input.txt"), "w+") as f:
-            f.write(response.text)
-        print("Downloaded input")
+        if "Please log in " in response.text:
+            print("Please provide a AOC_COOKIE env variable.")
+            print("The value needed is the cookie as you visit aoc website.")
+        else:
+            with open(os.path.join(dir, "input.txt"), "w+") as f:
+                f.write(response.text)
+            print("Downloaded input")
     else:
         print("Met unexpected status code", response.status_code)
         print(response.text)
@@ -48,31 +57,37 @@ def fetch(year: int, day: int):
     page_url = f"https://adventofcode.com/{year}/day/{day}"
     response = requests.get(page_url)
     print(response.status_code)
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.text, "html.parser")
-
-        code_tag = soup.find("pre")
-        if code_tag:
-            with open(os.path.join(dir, "test.txt"), "w+") as f:
-                f.write(code_tag.text)
-            print("Added test input")
-        # find last <code> tag
-        code_tag = soup.findAll("code")[-1]
-        print(code_tag.text)
-        desc = soup.find("article", class_="day-desc")
-        if code_tag:
-            with open(os.path.join(dir, "run.py"), "w+") as f:
-                to_write = py_text.replace("DAY", f"{day}")
-                try:
-                    temp = int(code_tag.text)
-                    to_write = to_write.replace("'A_RESPONSE'", code_tag.text)
-                except:
-                    to_write = to_write.replace("A_RESPONSE", code_tag.text)
-                to_write = to_write.replace("DESCRIPTION", desc.text)
-                f.write(to_write)
-            print("Added solution")
-    else:
+    if response.status_code != 200:
         print(response.text)
+        return 
+    soup = BeautifulSoup(response.text, "html.parser")
+    code_tag = soup.find("pre")
+    if code_tag:
+        with open(os.path.join(dir, "test.txt"), "w+") as f:
+            f.write(code_tag.text)
+        print("Added test input")
+    # find last <code> tag
+    code_tag = soup.findAll("code")[-1]
+    print(code_tag.text)
+    desc = soup.find("article", class_="day-desc")
+    if code_tag is None:
+        print("Unable to find test output")
+        return
+    with open(os.path.join(dir, "run.py"), "r") as f:
+        to_write = f.read()
+    with open(os.path.join(dir, "run.py"), "w") as f:
+        replace_string = "A_RESPONSE"
+        if replace_string not in to_write:
+            replace_string = "B_RESPONSE"
+        try:
+            temp = int(code_tag.text)
+            to_write = to_write.replace(f'"{replace_string}"', code_tag.text)
+        except:
+            to_write = to_write.replace(replace_string, code_tag.text)
+        to_write = to_write.replace("DESCRIPTION", desc.text)
+        f.write(to_write)
+    print("Added solution")
+        
 
 
 def main(year: int, day: int):
