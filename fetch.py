@@ -28,13 +28,14 @@ def fetch(year: int, day: int):
     dir = os.path.join(CWD, str(year), f"{day:02}")
     os.makedirs(dir, exist_ok=True)
 
-    with open(os.path.join(dir, "run.py"), "w+") as f:
-        _text = py_text.replace("DAY", str(day)).replace("YEAR", str(year))
-        f.write(_text)
-    with open(os.path.join(dir, "test.txt"), "w+") as f:
-        f.write("")
-    with open(os.path.join(dir, "input.txt"), "w+") as f:
-        f.write("")
+    if not os.path.exists(os.path.join(dir, "run.py")):
+        with open(os.path.join(dir, "run.py"), "w+") as f:
+            _text = py_text.replace("DAY", str(day)).replace("YEAR", str(year))
+            f.write(_text)
+    for fname in ["test.txt", "input.txt"]:
+        if not os.path.exists(os.path.join(dir, fname)):
+            with open(os.path.join(dir, fname), "w+") as f:
+                f.write("")
 
     print("Done")
 
