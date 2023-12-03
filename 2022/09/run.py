@@ -96,17 +96,22 @@ def part_b(inp):
                 nposs.append(pos)
             poss = nposs
             seen.add(poss[-1])
+            print(poss)
     return len(seen)
 
 
 if __name__ == "__main__":
     with open(f"{CWD}/test.txt", "r") as f:
         inp = f.read().strip()
-    # print("Testing  (a):", part_a(inp))
-    # print("Expected (a):", 13)
+    print("Testing  (a):", part_a(inp))
+    print("Expected (a):", 13)
     print("Testing  (b):", part_b(inp))
     print("Expected (b):", 36)
     with open(f"{CWD}/input.txt", "r") as f:
         inp = f.read().strip()
-    # print("Actual   (a):", part_a(inp))
+    print("Actual   (a):", part_a(inp))
     print("Actual   (b):", part_b(inp))
+
+"""
+2296: too high
+"""
