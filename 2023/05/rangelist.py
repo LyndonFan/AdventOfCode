@@ -1,6 +1,6 @@
 class RangeList:
     def __init__(self, ranges: list[tuple[int, int]]) -> None:
-        self.ranges = [(s, s+l) for s,l in sorted(ranges)]
+        self.ranges = [(s, s+l) for s,l in sorted(ranges) if l > 0]
     
     def __contains__(self, x: int) -> bool:
         return any(
@@ -18,6 +18,22 @@ class RangeList:
     def __repr__(self) -> str:
         intervals_str = [f"[{s}, {e})" for s, e in self.ranges]
         return f"RangeList({', '.join(intervals_str)})"
+    
+    def min(self) -> int:
+        if len(self) == 0:
+            raise ValueError("Empty RangeList")
+        for r in self.ranges:
+            if r[1] > r[0]:
+                return r[0]
+        raise ValueError("Empty RangeList")
+    
+    def max(self) -> int:
+        if len(self) == 0:
+            raise ValueError("Empty RangeList")
+        for i in range(len(self.ranges)-1, -1, -1):
+            if self.ranges[i][1] > self.ranges[i][0]:
+                return self.ranges[i][1] - 1
+        raise ValueError("Empty RangeList")
 
     def copy(self) -> "RangeList":
         return RangeList([(s, e-s) for s, e in self.ranges])
@@ -78,7 +94,6 @@ class RangeList:
                 if new_end == prev_new_end:
                     break
             new_ranges.append((new_start, new_end - new_start))
-            print(self_index, other_index, (new_start, new_end))
             self_index += 1
             other_index += 1
         new_ranges += [(s, e-s) for s,e in self.ranges[self_index:]]

@@ -22,6 +22,20 @@ class MappingLookup:
             if x in range_list:
                 return x + offset
         return x
+    
+    def map_range(self, source_range: RangeList) -> RangeList:
+        new_ranges = []
+        curr_range = source_range.copy()
+        for offset, range_list in zip(self.offsets, self.ranges):
+            overlap = source_range.intersect(range_list)
+            if not len(overlap):
+                continue
+            new_ranges.append(overlap.apply_offset(offset))
+            curr_range = curr_range.subtract(range_list)
+        for r in new_ranges:
+            curr_range = curr_range.union(r)
+        return curr_range
+
 
 class FertilizerConfig:
     def __init__(
@@ -51,6 +65,24 @@ class FertilizerConfig:
         humidity = self.temperature_to_humidity_lookup.get(temperature)
         location = self.humidity_to_location_lookup.get(humidity)
         return location
+    
+    def seed_range_to_location_range(self, seed_range: RangeList) -> RangeList:
+        # print(f"{seed_range=}")
+        soil_range = self.seed_to_soil_lookup.map_range(seed_range)
+        # print(f"{soil_range=}")
+        fertilizer_range = self.soil_to_fertilizer_lookup.map_range(soil_range)
+        # print(f"{fertilizer_range=}")
+        water_range = self.fertilizer_to_water_lookup.map_range(fertilizer_range)
+        # print(f"{water_range=}")
+        light_range = self.water_to_light_lookup.map_range(water_range)
+        # print(f"{light_range=}")
+        temperature_range = self.light_to_temperature_lookup.map_range(light_range)
+        # print(f"{temperature_range=}")
+        humidity_range = self.temperature_to_humidity_lookup.map_range(temperature_range)
+        # print(f"{humidity_range=}")
+        location_range = self.humidity_to_location_lookup.map_range(humidity_range)
+        # print(f"{location_range=}")
+        return location_range
 
 def parse(inp):
     data = inp.split("\n")
@@ -78,8 +110,9 @@ def part_a(inp):
 
 def part_b(inp):
     seeds, config = parse(inp)
-    locations = [0]
-    return min(locations)
+    seed_range = RangeList([(seeds[i], seeds[i+1]) for i in range(0, len(seeds), 2)])
+    location_ranges = config.seed_range_to_location_range(seed_range)
+    return location_ranges.min()
 
 
 if __name__ == "__main__":
