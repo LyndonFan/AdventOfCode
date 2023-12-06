@@ -17,6 +17,13 @@ def test_len():
     rl = RangeList(ranges)
     assert len(rl) == 5 + 15 + 25
 
+def test_copy():
+    ranges = [(1, 5), (10, 15), (30, 25)]
+    rl = RangeList(ranges)
+    copy = rl.copy()
+    assert copy == rl
+    assert copy is not rl
+
 def test_apply_offset():
     ranges = [(1, 5), (10, 15), (30, 25)]
     rl = RangeList(ranges)
