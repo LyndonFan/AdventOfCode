@@ -48,3 +48,8 @@ def test_union_one_overlap():
     xs = RangeList([(1, 10)]) # [1,11)
     ys = RangeList([(5, 10)]) # [5,15)
     assert xs.union(ys) == RangeList([(1, 14)])
+
+def test_union_multiple_overlap():
+    xs = RangeList([(1, 4), (8, 4), (15, 4)]) # [1,5) U [8,12) U [15,19)
+    ys = RangeList([(4, 4), (11, 4), (18, 4)]) # [4,8) U [11,15) U [18,22)
+    assert xs.union(ys) == RangeList([(1, 21)])

@@ -52,7 +52,7 @@ class RangeList:
                 new_ranges.append((s, e-s))
                 self_idx += 1
                 continue
-            elif self_start >= other_end:
+            if self_start >= other_end:
                 s, e = other.ranges[other_index]
                 new_ranges.append((s, e-s))
                 other_index += 1
@@ -63,14 +63,10 @@ class RangeList:
                 prev_new_end = new_end
                 while self_idx < len(self.ranges) and self.ranges[self_idx][0] <= new_end:
                     self_idx += 1
-                if self_idx == len(self.ranges):
-                    break
                 self_idx -= 1
                 new_end = max(self.ranges[self_idx][1], new_end)
                 while other_index < len(other.ranges) and other.ranges[other_index][0] <= new_end:
                     other_index += 1
-                if other_index == len(other.ranges):
-                    break
                 other_index -= 1
                 new_end = max(other.ranges[other_index][1], new_end)
                 if new_end == prev_new_end:
