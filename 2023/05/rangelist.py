@@ -1,6 +1,6 @@
 class RangeList:
     def __init__(self, ranges: list[tuple[int, int]]) -> None:
-        self.ranges = [(s, s+l) for s,l in ranges]
+        self.ranges = [(s, s+l) for s,l in sorted(ranges)]
     
     def __contains__(self, x: int) -> bool:
         return any(
@@ -47,12 +47,12 @@ class RangeList:
         while self_idx < len(self.ranges) and other_index < len(other.ranges):
             self_start, self_end = self.ranges[self_idx]
             other_start, other_end = other.ranges[other_index]
-            if self_end <= other_start:
+            if self_end < other_start:
                 s, e = self.ranges[self_idx]
                 new_ranges.append((s, e-s))
                 self_idx += 1
                 continue
-            if self_start >= other_end:
+            if self_start > other_end:
                 s, e = other.ranges[other_index]
                 new_ranges.append((s, e-s))
                 other_index += 1
@@ -72,6 +72,7 @@ class RangeList:
                 if new_end == prev_new_end:
                     break
             new_ranges.append((new_start, new_end - new_start))
+            print(self_idx, other_index, (new_start, new_end))
             self_idx += 1
             other_index += 1
         new_ranges += [(s, e-s) for s,e in self.ranges[self_idx:]]
