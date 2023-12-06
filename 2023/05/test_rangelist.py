@@ -69,6 +69,27 @@ def test_union_multiple_overlap():
 def test_union_multiple_separate_overlap():
     xs = RangeList([(1, 4), (8, 4), (25, 4)]) # [1,5) U [8,12) U [25,29)
     ys = RangeList([(4, 4), (21, 4), (28, 4)]) # [4,8) U [21,25) U [28,32)
-    res = xs.union(ys)
-    print(res)
-    assert res == RangeList([(1, 11), (21, 11)])
+    assert xs.union(ys) == RangeList([(1, 11), (21, 11)])
+
+def test_subtract_no_overlap():
+    xs = RangeList([(1, 5), (10, 5)])
+    ys = RangeList([(20, 25)])
+    emptys = RangeList([])
+    assert xs.subtract(ys) == xs
+    assert ys.subtract(xs) == ys
+    assert xs.subtract(emptys) == xs
+    assert emptys.subtract(xs) == emptys
+
+def test_subtract_trim():
+    xs = RangeList([(0, 10)])
+    ys = RangeList([(-4, 6)])
+    assert xs.subtract(ys) == RangeList([(2, 8)])
+    assert ys.subtract(xs) == RangeList([(-4, 4)])
+
+def test_subtract_many_overlap():
+    xs = RangeList([(1, 4), (8, 4), (25, 4)]) # [1,5) U [8,12) U [25,29)
+    ys = RangeList([(4, 4), (21, 4), (28, 4)]) # [4,8) U [21,25) U [28,32)
+    # xs - ys = [1,4) U [8,12) U [25,28)
+    assert xs.subtract(ys) == RangeList([(1, 3), (8, 4), (25, 3)])
+    # ys - xs = [5,8) U [21,25) U [29,32)
+    assert ys.subtract(xs) == RangeList([(5, 3), (21, 4), (29, 3)])

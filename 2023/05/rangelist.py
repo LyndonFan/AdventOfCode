@@ -97,3 +97,29 @@ class RangeList:
         new_ranges = []
         self_index = 0
         other_index = 0
+        while self_index < len(self.ranges) and other_index < len(other.ranges):
+            self_start, self_end = self.ranges[self_index]
+            other_start, other_end = other.ranges[other_index]
+            if self_end <= other_start:
+                new_ranges.append((self_start, self_end - self_start))
+                self_index += 1
+                continue
+            if self_start >= other_end:
+                other_index += 1
+                continue
+            if other_start <= self_start:
+                curr_start = other_end
+                other_index += 1
+            else:
+                curr_start = self_start
+            while other_index < len(other.ranges) and curr_start <= self_end:
+                curr_end = other.ranges[other_index][0]
+                if curr_end > curr_start:
+                    new_ranges.append((curr_start, curr_end - curr_start))
+                curr_start = other.ranges[other_index][1]
+                other_index += 1
+            if curr_start < self_end:
+                new_ranges.append((curr_start, self_end - curr_start))
+            self_index += 1
+        new_ranges += [(s, e-s) for s,e in self.ranges[self_index:]]
+        return RangeList(new_ranges)
