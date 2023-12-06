@@ -17,12 +17,10 @@ class RangeList:
     def __len__(self) -> int:
         return sum(e-s for s,e in self.ranges)
     
-    def intersect(self, other: "RangeList") -> RangeList:
+    def intersect(self, other: "RangeList") -> "RangeList":
         new_ranges = []
         self_idx = 0
         other_index = 0
-        if idx == len(self.ranges):
-            return RangeList(new_ranges)
         while self_idx < len(self.ranges) and other_index < len(other.ranges):
             self_start, self_end = self.ranges[self_idx]
             other_start, other_end = other.ranges[other_index]
@@ -40,7 +38,7 @@ class RangeList:
                     self_idx += 1
         return RangeList(new_ranges)
     
-    def union(self, other: "RangeList") -> RangeList:
+    def union(self, other: "RangeList") -> "RangeList":
         new_ranges = []
         self_idx = 0
         other_index = 0
@@ -88,9 +86,6 @@ class MappingLookup:
             if x >= source and x < source + range_length:
                 return destination + (x - source)
         return x
-    
-    def map_range(self, range: tuple[int, int]) -> list[tuple[int, int]]:
-        return [self.get(x) for x in range]
 
 class FertilizerConfig:
     def __init__(
