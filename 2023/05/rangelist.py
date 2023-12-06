@@ -19,6 +19,9 @@ class RangeList:
         intervals_str = [f"[{s}, {e})" for s, e in self.ranges]
         return f"RangeList({', '.join(intervals_str)})"
 
+    def apply_offset(self, offset: int) -> "RangeList":
+        return RangeList([(s+offset, e-s) for s, e in self.ranges])
+
     def intersect(self, other: "RangeList") -> "RangeList":
         new_ranges = []
         self_idx = 0
