@@ -3,17 +3,24 @@ import os
 from tqdm import tqdm
 import numpy as np
 
+from rangelist import RangeList
+
 CWD = os.path.dirname(os.path.abspath(__file__))
 
 class MappingLookup:
     def __init__(self, ranges: list[tuple[int, int, int]]) -> None:
-        self.ranges = ranges
-        self.ranges.sort(key = lambda x: x[1])
+        # tuple (destination, source, range_length)
+        sorted_ranges = sorted(ranges, key=lambda x: x[1])
+        self.ranges = [
+            RangeList([(start, range_length)])
+            for _, start, range_length in sorted_ranges
+        ]
+        self.offsets = [destination - source for destination, source, _ in sorted_ranges]
     
     def get(self, x: int) -> int:
-        for destination, source, range_length in self.ranges:
-            if x >= source and x < source + range_length:
-                return destination + (x - source)
+        for offset, range_list in zip(self.offsets, self.ranges):
+            if x in range_list:
+                return x + offset
         return x
 
 class FertilizerConfig:
@@ -71,7 +78,7 @@ def part_a(inp):
 
 def part_b(inp):
     seeds, config = parse(inp)
-    locations = []
+    locations = [0]
     return min(locations)
 
 
