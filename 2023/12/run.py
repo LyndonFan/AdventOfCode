@@ -48,16 +48,45 @@ def match_clues(row: list[str], clues: list[int]):
     return clue_index == len(clues)
 
 def preprocess(current_row: list[str], clues: list[int]) -> list[str]:
-    if current_row[0] == EMPTY_CHAR or current_row[-1] == EMPTY_CHAR:
-        first_empty = 0
-        while current_row[first_empty] == EMPTY_CHAR:
-            first_empty += 1
-        last_empty = len(current_row) - 1
-        while current_row[last_empty] == EMPTY_CHAR:
-            last_empty -= 1
-        inner_row = [x for x in current_row[first_empty:last_empty+1]]
-        inner_row = preprocess(inner_row, clues)
-        return current_row[:first_empty] + inner_row + current_row[last_empty+1:]
+    index = 0
+    clue_index = 0
+    filled_start_index = -1
+    while index < len(current_row) and current_row[index] != UNKNOWN_CHAR:
+        if current_row[index] == FILL_CHAR:
+            if filled_start_index == -1:
+                filled_start_index = index
+        else:
+            if filled_start_index != -1 and index - filled_start_index == clues[clue_index]:
+                clue_index += 1
+                filled_start_index = -1
+        index += 1
+    if index > 0:
+        if filled_start_index != -1:
+            index = filled_start_index
+        concerned_row = [x for x in current_row[index:]]
+        concerned_row = preprocess(concerned_row, clues[clue_index:])
+        current_row = current_row[:index] + concerned_row
+        return current_row
+    
+    index = len(current_row) - 1
+    clue_index = len(clues) - 1
+    filled_end_index = -1
+    while index >= 0 and current_row[index] != UNKNOWN_CHAR:
+        if current_row[index] == FILL_CHAR:
+            if filled_end_index == -1:
+                filled_end_index = index
+        else:
+            if filled_end_index != -1 and filled_end_index - index == clues[clue_index]:
+                clue_index -= 1
+                filled_end_index = -1
+        index -= 1
+    if index < len(current_row) - 1:
+        if filled_end_index != -1:
+            index = filled_end_index
+        concerned_row = [x for x in current_row[:index+1]]
+        concerned_row = preprocess(concerned_row, clues[:clue_index+1])
+        current_row = concerned_row + current_row[index+1:]
+        return current_row
     
     min_needed = sum(clues) + len(clues) - 1
     diff = len(current_row) - min_needed
