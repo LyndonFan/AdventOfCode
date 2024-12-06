@@ -82,10 +82,6 @@ func internalMain(filePath string) {
 		fmt.Println("failed to read", filePath, err)
 		return
 	}
-	if err != nil {
-		fmt.Println("failed to preprocess", err)
-		return
-	}
 	partAres := partA(lines)
 	fmt.Println("part A result is", partAres)
 	partBres := partB(lines)
