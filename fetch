@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-poetry run python fetch.py --year $1 --day $2
+uv run fetch.py --year $1 --day $2

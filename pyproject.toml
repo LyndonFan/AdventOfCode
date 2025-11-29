@@ -1,26 +1,30 @@
-[tool.poetry]
+[project]
 name = "advent-of-code"
-version = "0.1.0"
+version = "0.2.0"
 description = ""
-authors = ["Lyndon Fan <lyndon0808@gmail.com>"]
+authors = [{ name = "Lyndon Fan", email = "lyndon0808@gmail.com" }]
+requires-python = ">=3.11,<4"
 readme = "README.md"
+dependencies = [
+    "lxml>=4.9.3,<5",
+    "beautifulsoup4>=4.12.2,<5",
+    "numpy>=1.26.2,<2",
+    "tqdm>=4.66.1,<5",
+    "python-dotenv>=1.0.0,<2",
+    "requests>=2.31.0,<3",
+    "ipython>=8.18.1,<9",
+]
 
-[tool.poetry.dependencies]
-python = "^3.11"
-lxml = "^4.9.3"
-beautifulsoup4 = "^4.12.2"
-numpy = "^1.26.2"
-tqdm = "^4.66.1"
-python-dotenv = "^1.0.0"
-requests = "^2.31.0"
-ipython = "^8.18.1"
-
-
-[tool.poetry.group.dev.dependencies]
-ruff = "^0.1.6"
-isort = "^5.12.0"
-pytest = "^7.4.3"
+[dependency-groups]
+dev = [
+    "ruff>=0.1.6,<0.2",
+    "isort>=5.12.0,<6",
+    "pytest>=7.4.3,<8",
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]

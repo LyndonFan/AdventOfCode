@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-python $1/$2/run.py
+uv run $1/$2/run.py
