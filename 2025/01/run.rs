@@ -76,5 +76,3 @@ fn part_b(lines: Vec<&str>) -> i32 {
     }
     res
 }
-
-// >4576, <6795
